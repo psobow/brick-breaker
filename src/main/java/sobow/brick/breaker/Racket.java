@@ -11,7 +11,7 @@ public class Racket extends Rectangle
     private static final int RACKET_HEIGHT = WINDOW_SETTINGS.getWINDOW_HEIGHT() / 25;
     private static final int INIT_X_POS = WINDOW_SETTINGS.getWINDOW_WIDTH() / 2 - RACKET_WIDTH / 2;
     private static final int INIT_Y_POS =
-            WINDOW_SETTINGS.getWINDOW_HEIGHT() - RACKET_HEIGHT - WINDOW_SETTINGS.getWINDOW_TOP_BAR_HEIGHT();
+            WINDOW_SETTINGS.getWINDOW_HEIGHT() - RACKET_HEIGHT - WINDOW_SETTINGS.getWINDOW_TOP_BAR_HEIGHT() - 30;
 
 
     private Racket()

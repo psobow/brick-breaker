@@ -16,7 +16,7 @@ public class WindowSettings
     {
         WINDOW_WIDTH = DIMENSION.width / 2;
         WINDOW_HEIGHT = DIMENSION.height / 2;
-        WINDOW_TOP_BAR_HEIGHT = 50;
+        WINDOW_TOP_BAR_HEIGHT = 20;
     }
 
     public static WindowSettings getInstance()

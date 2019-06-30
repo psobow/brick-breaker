@@ -9,7 +9,8 @@ public class Ball
     private static final int INIT_R = 20;
     private static final int INIT_X_POS = WINDOW_SETTINGS.getWINDOW_WIDTH() / 2;
     private static final int INIT_Y_POS =
-            WINDOW_SETTINGS.getWINDOW_HEIGHT() - WINDOW_SETTINGS.getWINDOW_TOP_BAR_HEIGHT() - racket.height - INIT_R;
+            WINDOW_SETTINGS.getWINDOW_HEIGHT() - WINDOW_SETTINGS.getWINDOW_TOP_BAR_HEIGHT() - 30 - racket.height
+            - INIT_R;
 
     private static int x = INIT_X_POS - (INIT_R / 2);
     private static int y = INIT_Y_POS - (INIT_R / 2);

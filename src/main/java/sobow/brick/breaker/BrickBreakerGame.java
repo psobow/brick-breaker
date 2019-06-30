@@ -27,6 +27,7 @@ public class BrickBreakerGame implements ActionListener, KeyListener
     private List<Brick> topBrickRow = new ArrayList<>();
     private List<Brick> midBrickRow = new ArrayList<>();
     private List<Brick> botBrickRow = new ArrayList<>();
+    private boolean initialState = true;
 
     private final int INFORMATION_FONT_SIZE = 20;
     private final int RACKET_SPEED = 15;
@@ -69,6 +70,38 @@ public class BrickBreakerGame implements ActionListener, KeyListener
         renderPanel.revalidate();
         renderPanel.repaint();
 
+        // Reslove collision with walls
+
+        // Colision with left wall
+        if (Ball.getX() < 0)
+        {
+            xAxisBallMotionFactor *= -1;
+        }
+        // Colision with right wall
+        else if (Ball.getX() + Ball.getR() > windowSettings.getWINDOW_WIDTH())
+        {
+            xAxisBallMotionFactor *= -1;
+        }
+        // Collision with top wall
+        else if (Ball.getY() - Ball.getR() < -windowSettings.getWINDOW_TOP_BAR_HEIGHT())
+        {
+            yAxisBallMotionFactor *= -1;
+        }
+        // Collision with racket
+        else if (Ball.getX() > racket.x && Ball.getX() < racket.x + racket.width && Ball.getY() + Ball.getR() > racket.y
+                 && Ball.getY() + Ball.getR() < racket.y + racket.height)
+        {
+            yAxisBallMotionFactor *= -1;
+        }
+        // collision with bottom
+        else if (Ball.getY() + Ball.getR()
+                 >= windowSettings.getWINDOW_HEIGHT() - windowSettings.getWINDOW_TOP_BAR_HEIGHT() - 10)
+        {
+            timer.stop();
+        }
+
+
+
         // Move ball
         Ball.increseXby(xAxisBallMotionFactor);
         Ball.increseYby(yAxisBallMotionFactor);
@@ -109,11 +142,21 @@ public class BrickBreakerGame implements ActionListener, KeyListener
         g.setFont(new Font("Arial", 1, INFORMATION_FONT_SIZE));
         if (timer.isRunning() == false)
         {
-            g.drawString("Press space bar to start!",
-                         windowSettings.getWINDOW_WIDTH() / 3 + 40,
-                         windowSettings.getWINDOW_HEIGHT() / 2);
-            g.drawString("Use arrows to move the racket", windowSettings.getWINDOW_WIDTH() / 3 + 10,
-                         windowSettings.getWINDOW_HEIGHT() / 2 + INFORMATION_FONT_SIZE);
+            if (initialState)
+            {
+                g.drawString("Press space bar to start!",
+                             windowSettings.getWINDOW_WIDTH() / 3 + 40,
+                             windowSettings.getWINDOW_HEIGHT() / 2);
+                g.drawString("Use arrows to move the racket",
+                             windowSettings.getWINDOW_WIDTH() / 3 + 10,
+                             windowSettings.getWINDOW_HEIGHT() / 2 + INFORMATION_FONT_SIZE);
+            }
+            else
+            {
+                g.drawString("Press enter to reset!",
+                             windowSettings.getWINDOW_WIDTH() / 3 + 40,
+                             windowSettings.getWINDOW_HEIGHT() / 2);
+            }
         }
         // score info
         g.drawString("Score: " + playerScore, 25, 25);
@@ -126,19 +169,28 @@ public class BrickBreakerGame implements ActionListener, KeyListener
         switch (keyID)
         {
             case KeyEvent.VK_SPACE:
-                if (timer.isRunning() == false)
+                if (timer.isRunning() == false && initialState == true)
                 {
                     timer.start();
+                    initialState = false;
                 }
                 break;
             case KeyEvent.VK_LEFT:
-                racket.x -= RACKET_SPEED;
+                if (racket.x > 0 && timer.isRunning())
+                {
+                    racket.x -= RACKET_SPEED;
+                }
                 break;
             case KeyEvent.VK_RIGHT:
-                racket.x += RACKET_SPEED;
+                if (racket.x + racket.width < windowSettings.getWINDOW_WIDTH() && timer.isRunning())
+                {
+                    racket.x += RACKET_SPEED;
+                }
                 break;
             case KeyEvent.VK_ENTER:
                 resetGame();
+                renderPanel.revalidate();
+                renderPanel.repaint();
                 break;
             default:
                 break;
@@ -151,8 +203,8 @@ public class BrickBreakerGame implements ActionListener, KeyListener
         Racket.resetRacketPosition();
         Ball.resetBallPosition();
 
-        yAxisBallMotionFactor = -1;
-        xAxisBallMotionFactor = 1;
+        yAxisBallMotionFactor = -3;
+        xAxisBallMotionFactor = -3;
         playerScore = 0;
 
         // Ball will randomly fly to left or right side
@@ -160,6 +212,7 @@ public class BrickBreakerGame implements ActionListener, KeyListener
         {
             xAxisBallMotionFactor = xAxisBallMotionFactor * (-1);
         }
+        initialState = true;
     }
 
     private void initializeBricks()
