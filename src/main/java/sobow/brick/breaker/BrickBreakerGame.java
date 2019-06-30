@@ -28,6 +28,7 @@ public class BrickBreakerGame implements ActionListener, KeyListener
     private List<Brick> midBrickRow = new ArrayList<>();
     private List<Brick> botBrickRow = new ArrayList<>();
     private boolean initialState = true;
+    private boolean allowCollisionWithRacket = true;
 
     private final int INFORMATION_FONT_SIZE = 20;
     private final int RACKET_SPEED = 15;
@@ -37,7 +38,7 @@ public class BrickBreakerGame implements ActionListener, KeyListener
     private final Color RACKET_COLOR = Color.green.darker().darker();
     private final Color TEXT_COLOR = Color.LIGHT_GRAY;
     private final Color BALL_COLOR = Color.CYAN.darker().darker();
-    private final Color BRICK_COLOR = Color.orange;
+    private final Color BRICK_COLOR = Color.GRAY;
 
     private BrickBreakerGame()
     {
@@ -73,38 +74,107 @@ public class BrickBreakerGame implements ActionListener, KeyListener
         // Reslove collision with walls
 
         // Colision with left wall
-        if (Ball.getX() < 0)
+        if (Ball.getxPosLeftTopCorner() <= 0)
         {
             xAxisBallMotionFactor *= -1;
+            allowCollisionWithRacket = true;
         }
         // Colision with right wall
-        else if (Ball.getX() + Ball.getR() > windowSettings.getWINDOW_WIDTH())
+        else if (Ball.getxPosLeftTopCorner() + Ball.getDiameter() >= windowSettings.getWINDOW_WIDTH())
         {
             xAxisBallMotionFactor *= -1;
+            allowCollisionWithRacket = true;
         }
         // Collision with top wall
-        else if (Ball.getY() - Ball.getR() < -windowSettings.getWINDOW_TOP_BAR_HEIGHT())
+        else if (Ball.getyPosLeftTopCorner() <= 0)
         {
             yAxisBallMotionFactor *= -1;
+            allowCollisionWithRacket = true;
         }
         // Collision with racket
-        else if (Ball.getX() > racket.x && Ball.getX() < racket.x + racket.width && Ball.getY() + Ball.getR() > racket.y
-                 && Ball.getY() + Ball.getR() < racket.y + racket.height)
+        else if (racket.intersects(Ball.getBounds()) && allowCollisionWithRacket && Ball.getYCenter() <= racket.y)
         {
             yAxisBallMotionFactor *= -1;
+            allowCollisionWithRacket = false;
         }
         // collision with bottom
-        else if (Ball.getY() + Ball.getR()
-                 >= windowSettings.getWINDOW_HEIGHT() - windowSettings.getWINDOW_TOP_BAR_HEIGHT() - 10)
+        else if (Ball.getyPosLeftTopCorner() + Ball.getDiameter()
+                 >= windowSettings.getWINDOW_HEIGHT() - windowSettings.getWINDOW_TOP_BAR_HEIGHT())
         {
             timer.stop();
         }
+        // colision with bricks
+        else
+        {
 
+            for (int i = 0; i < topBrickRow.size(); i++)
+            {
+                if (topBrickRow.get(i).intersects(Ball.getBounds()))
+                {
+                    allowCollisionWithRacket = true;
+                    playerScore++;
+                    if (Ball.getYCenter() > topBrickRow.get(i).y + Brick.getBrickHeight()
+                        || Ball.getYCenter() < topBrickRow.get(i).y)
+                    {
+                        yAxisBallMotionFactor *= -1;
+                    }
+                    else
+                    {
+                        xAxisBallMotionFactor *= -1;
+                    }
 
+                    topBrickRow.remove(i);
+
+                }
+            }
+
+            for (int i = 0; i < midBrickRow.size(); i++)
+            {
+                if (midBrickRow.get(i).intersects(Ball.getBounds()))
+                {
+                    allowCollisionWithRacket = true;
+                    playerScore++;
+                    if (Ball.getYCenter() > midBrickRow.get(i).y + Brick.getBrickHeight()
+                        || Ball.getYCenter() < midBrickRow.get(i).y)
+                    {
+                        yAxisBallMotionFactor *= -1;
+                    }
+                    else
+                    {
+                        xAxisBallMotionFactor *= -1;
+                    }
+                    midBrickRow.remove(i);
+                }
+            }
+
+            for (int i = 0; i < botBrickRow.size(); i++)
+            {
+                if (botBrickRow.get(i).intersects(Ball.getBounds()))
+                {
+                    allowCollisionWithRacket = true;
+                    playerScore++;
+                    if (Ball.getYCenter() > botBrickRow.get(i).y + Brick.getBrickHeight()
+                        || Ball.getYCenter() < botBrickRow.get(i).y)
+                    {
+                        yAxisBallMotionFactor *= -1;
+                    }
+                    else
+                    {
+                        xAxisBallMotionFactor *= -1;
+                    }
+                    botBrickRow.remove(i);
+                }
+            }
+        }
 
         // Move ball
         Ball.increseXby(xAxisBallMotionFactor);
         Ball.increseYby(yAxisBallMotionFactor);
+
+        if (botBrickRow.isEmpty() && midBrickRow.isEmpty() && topBrickRow.isEmpty())
+        {
+            timer.stop();
+        }
 
     }
 
@@ -120,7 +190,7 @@ public class BrickBreakerGame implements ActionListener, KeyListener
 
         // Paint Ball
         g.setColor(BALL_COLOR);
-        g.fillOval(Ball.getX(), Ball.getY(), Ball.getR(), Ball.getR());
+        g.fillOval(Ball.getxPosLeftTopCorner(), Ball.getyPosLeftTopCorner(), Ball.getDiameter(), Ball.getDiameter());
 
         // Paint Bricks
         g.setColor(BRICK_COLOR);

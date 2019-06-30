@@ -1,20 +1,24 @@
 package sobow.brick.breaker;
 
+import java.awt.Rectangle;
+
 public class Ball
 {
     private static Ball instance;
     private static Racket racket = Racket.getInstance();
     private static final WindowSettings WINDOW_SETTINGS = WindowSettings.getInstance();
 
-    private static final int INIT_R = 20;
-    private static final int INIT_X_POS = WINDOW_SETTINGS.getWINDOW_WIDTH() / 2;
-    private static final int INIT_Y_POS =
-            WINDOW_SETTINGS.getWINDOW_HEIGHT() - WINDOW_SETTINGS.getWINDOW_TOP_BAR_HEIGHT() - 30 - racket.height
-            - INIT_R;
+    private static final int DIAMETER = 20;
 
-    private static int x = INIT_X_POS - (INIT_R / 2);
-    private static int y = INIT_Y_POS - (INIT_R / 2);
-    private static int r = INIT_R;
+    private static final int INIT_X_POS_TOP_LEFT_CORNER = WINDOW_SETTINGS.getWINDOW_WIDTH() / 2 - 10;
+    private static final int INIT_Y_POS_TOP_LEFT_CORNER =
+            WINDOW_SETTINGS.getWINDOW_HEIGHT() - WINDOW_SETTINGS.getWINDOW_TOP_BAR_HEIGHT() - 50 - racket.height
+            - DIAMETER;
+
+    private static int xPosLeftTopCorner;
+    private static int yPosLeftTopCorner;
+
+    private static Rectangle bounds = new Rectangle();
 
     private Ball()
     {
@@ -41,33 +45,50 @@ public class Ball
 
     public static void resetBallPosition()
     {
-        x = INIT_X_POS - (INIT_R / 2);
-        y = INIT_Y_POS - (INIT_R / 2);
-        r = INIT_R;
+        xPosLeftTopCorner = INIT_X_POS_TOP_LEFT_CORNER;
+        yPosLeftTopCorner = INIT_Y_POS_TOP_LEFT_CORNER;
     }
 
     public static void increseXby(int additionalX)
     {
-        x = x + additionalX;
+        xPosLeftTopCorner = xPosLeftTopCorner + additionalX;
     }
 
     public static void increseYby(int additionalY)
     {
-        y = y + additionalY;
+        yPosLeftTopCorner = yPosLeftTopCorner + additionalY;
     }
 
-    public static int getX()
+    public static Rectangle getBounds()
     {
-        return x;
+        bounds.x = xPosLeftTopCorner;
+        bounds.y = yPosLeftTopCorner;
+        bounds.width = bounds.height = DIAMETER;
+        return bounds;
     }
 
-    public static int getY()
+    public static int getxPosLeftTopCorner()
     {
-        return y;
+        return xPosLeftTopCorner;
     }
 
-    public static int getR()
+    public static int getyPosLeftTopCorner()
     {
-        return r;
+        return yPosLeftTopCorner;
+    }
+
+    public static int getDiameter()
+    {
+        return DIAMETER;
+    }
+
+    public static int getXCenter()
+    {
+        return xPosLeftTopCorner + DIAMETER / 2;
+    }
+
+    public static int getYCenter()
+    {
+        return yPosLeftTopCorner + DIAMETER / 2;
     }
 }
