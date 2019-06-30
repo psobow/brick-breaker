@@ -6,7 +6,7 @@ public class Ball
     private static Racket racket = Racket.getInstance();
     private static final WindowSettings WINDOW_SETTINGS = WindowSettings.getInstance();
 
-    private static final int INIT_R = 30;
+    private static final int INIT_R = 20;
     private static final int INIT_X_POS = WINDOW_SETTINGS.getWINDOW_WIDTH() / 2;
     private static final int INIT_Y_POS =
             WINDOW_SETTINGS.getWINDOW_HEIGHT() - WINDOW_SETTINGS.getWINDOW_TOP_BAR_HEIGHT() - racket.height - INIT_R;
@@ -17,7 +17,7 @@ public class Ball
 
     private Ball()
     {
-        resetBall();
+        resetBallPosition();
     }
 
     public static Ball getInstance()
@@ -38,7 +38,7 @@ public class Ball
         }
     }
 
-    public static void resetBall()
+    public static void resetBallPosition()
     {
         x = INIT_X_POS - (INIT_R / 2);
         y = INIT_Y_POS - (INIT_R / 2);
