@@ -10,11 +10,13 @@ public class WindowSettings
     private final Dimension DIMENSION = Toolkit.getDefaultToolkit().getScreenSize();
     private final int WINDOW_WIDTH;
     private final int WINDOW_HEIGHT;
+    private final int WINDOW_TOP_BAR_HEIGHT;
 
     private WindowSettings()
     {
         WINDOW_WIDTH = DIMENSION.width / 2;
         WINDOW_HEIGHT = DIMENSION.height / 2;
+        WINDOW_TOP_BAR_HEIGHT = 50;
     }
 
     public static WindowSettings getInstance()
@@ -43,5 +45,10 @@ public class WindowSettings
     public int getWINDOW_HEIGHT()
     {
         return WINDOW_HEIGHT;
+    }
+
+    public int getWINDOW_TOP_BAR_HEIGHT()
+    {
+        return WINDOW_TOP_BAR_HEIGHT;
     }
 }
