@@ -7,8 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import javax.swing.Timer;
 
@@ -16,23 +14,26 @@ public class BrickBreakerGame implements ActionListener, KeyListener
 {
     private static BrickBreakerGame instance;
 
-    private WindowSettings windowSettings = WindowSettings.getInstance();
     private Racket racket = Racket.getInstance();
-    private RenderPanel renderPanel;
+    private Ball ball = Ball.getInstance();
+    private BricksManager bricksManager = BricksManager.getInstance();
     private Timer timer = new Timer(20, this);
     private Random random = new Random();
-    private int playerScore = 0;
-    private int yAxisBallMotionFactor = 0;
-    private int xAxisBallMotionFactor = 0;
-    private List<Brick> topBrickRow = new ArrayList<>();
-    private List<Brick> midBrickRow = new ArrayList<>();
-    private List<Brick> botBrickRow = new ArrayList<>();
-    private boolean initialState = true;
-    private boolean allowCollisionWithRacket = true;
+    private BrickCollisionDTO brickCollisionDTO;
+    private Brick brickWhichCollidedWithBall;
+    private RenderPanel renderPanel;
+
+    private int playerScore;
+    private int yAxisBallMotionFactor;
+    private int xAxisBallMotionFactor;
+
+    private boolean initialState;
+    private boolean collisionWithRacketPossible;
 
     private final int INFORMATION_FONT_SIZE = 20;
     private final int RACKET_SPEED = 15;
-    private final int GAP_BETWEEN_BRICKS = 5;
+    private final int INIT_X_AXIS_BALL_MOTION_FACTOR = -3;
+    private final int INIT_Y_AXIS_BALL_MOTION_FACTOR = -3;
 
     private final Color BACKGROUND_COLOR = Color.black;
     private final Color RACKET_COLOR = Color.green.darker().darker();
@@ -71,107 +72,51 @@ public class BrickBreakerGame implements ActionListener, KeyListener
         renderPanel.revalidate();
         renderPanel.repaint();
 
-        // Reslove collision with walls
+        brickCollisionDTO = CollisionResolver.withBricks(bricksManager.getBrickGrid(), ball);
+        if (brickCollisionDTO.isCollisionDetected())
+        {
+            brickWhichCollidedWithBall = bricksManager.getBrick(brickCollisionDTO.getRowIndex(),
+                                                                brickCollisionDTO.getColumnIndex());
+            playerScore++;
 
-        // Colision with left wall
-        if (Ball.getxPosLeftTopCorner() <= 0)
+            // if collision occured and ball center is located below or above brick
+            if (ball.getYCenter() >= brickWhichCollidedWithBall.y + Brick.getBrickHeight()
+                || ball.getYCenter() <= brickWhichCollidedWithBall.y)
+            {
+                yAxisBallMotionFactor *= -1;
+            }
+            else
+            {
+                xAxisBallMotionFactor *= -1;
+            }
+            bricksManager.removeBrick(brickCollisionDTO.getRowIndex(), brickCollisionDTO.getColumnIndex());
+            collisionWithRacketPossible = true;
+        }
+        else if (CollisionResolver.withLeftWall(ball) || CollisionResolver.withRightWall(ball))
         {
             xAxisBallMotionFactor *= -1;
-            allowCollisionWithRacket = true;
+            collisionWithRacketPossible = true;
         }
-        // Colision with right wall
-        else if (Ball.getxPosLeftTopCorner() + Ball.getDiameter() >= windowSettings.getWINDOW_WIDTH())
-        {
-            xAxisBallMotionFactor *= -1;
-            allowCollisionWithRacket = true;
-        }
-        // Collision with top wall
-        else if (Ball.getyPosLeftTopCorner() <= 0)
+        else if (CollisionResolver.withTopWall(ball))
         {
             yAxisBallMotionFactor *= -1;
-            allowCollisionWithRacket = true;
+            collisionWithRacketPossible = true;
         }
-        // Collision with racket
-        else if (racket.intersects(Ball.getBounds()) && allowCollisionWithRacket && Ball.getYCenter() <= racket.y)
+        else if (CollisionResolver.withRacket(ball, racket, collisionWithRacketPossible))
         {
             yAxisBallMotionFactor *= -1;
-            allowCollisionWithRacket = false;
+            collisionWithRacketPossible = false;
         }
-        // collision with bottom
-        else if (Ball.getyPosLeftTopCorner() + Ball.getDiameter()
-                 >= windowSettings.getWINDOW_HEIGHT() - windowSettings.getWINDOW_TOP_BAR_HEIGHT())
+        else if (CollisionResolver.withBottomWall(ball))
         {
             timer.stop();
         }
-        // colision with bricks
-        else
-        {
-
-            for (int i = 0; i < topBrickRow.size(); i++)
-            {
-                if (topBrickRow.get(i).intersects(Ball.getBounds()))
-                {
-                    allowCollisionWithRacket = true;
-                    playerScore++;
-                    if (Ball.getYCenter() > topBrickRow.get(i).y + Brick.getBrickHeight()
-                        || Ball.getYCenter() < topBrickRow.get(i).y)
-                    {
-                        yAxisBallMotionFactor *= -1;
-                    }
-                    else
-                    {
-                        xAxisBallMotionFactor *= -1;
-                    }
-
-                    topBrickRow.remove(i);
-
-                }
-            }
-
-            for (int i = 0; i < midBrickRow.size(); i++)
-            {
-                if (midBrickRow.get(i).intersects(Ball.getBounds()))
-                {
-                    allowCollisionWithRacket = true;
-                    playerScore++;
-                    if (Ball.getYCenter() > midBrickRow.get(i).y + Brick.getBrickHeight()
-                        || Ball.getYCenter() < midBrickRow.get(i).y)
-                    {
-                        yAxisBallMotionFactor *= -1;
-                    }
-                    else
-                    {
-                        xAxisBallMotionFactor *= -1;
-                    }
-                    midBrickRow.remove(i);
-                }
-            }
-
-            for (int i = 0; i < botBrickRow.size(); i++)
-            {
-                if (botBrickRow.get(i).intersects(Ball.getBounds()))
-                {
-                    allowCollisionWithRacket = true;
-                    playerScore++;
-                    if (Ball.getYCenter() > botBrickRow.get(i).y + Brick.getBrickHeight()
-                        || Ball.getYCenter() < botBrickRow.get(i).y)
-                    {
-                        yAxisBallMotionFactor *= -1;
-                    }
-                    else
-                    {
-                        xAxisBallMotionFactor *= -1;
-                    }
-                    botBrickRow.remove(i);
-                }
-            }
-        }
 
         // Move ball
-        Ball.increseXby(xAxisBallMotionFactor);
-        Ball.increseYby(yAxisBallMotionFactor);
+        ball.increaseXby(xAxisBallMotionFactor);
+        ball.increaseYby(yAxisBallMotionFactor);
 
-        if (botBrickRow.isEmpty() && midBrickRow.isEmpty() && topBrickRow.isEmpty())
+        if (bricksManager.isBrickGridEmpty())
         {
             timer.stop();
         }
@@ -182,7 +127,7 @@ public class BrickBreakerGame implements ActionListener, KeyListener
     {
         // Paint background
         g.setColor(BACKGROUND_COLOR);
-        g.fillRect(0, 0, windowSettings.getWINDOW_WIDTH(), windowSettings.getWINDOW_HEIGHT());
+        g.fillRect(0, 0, WindowSettings.getWINDOW_WIDTH(), WindowSettings.getWINDOW_HEIGHT());
 
         // Paint Racket
         g.setColor(RACKET_COLOR);
@@ -190,22 +135,14 @@ public class BrickBreakerGame implements ActionListener, KeyListener
 
         // Paint Ball
         g.setColor(BALL_COLOR);
-        g.fillOval(Ball.getxPosLeftTopCorner(), Ball.getyPosLeftTopCorner(), Ball.getDiameter(), Ball.getDiameter());
+        g.fillOval(ball.getXPosLeftTopCorner(), ball.getYPosLeftTopCorner(), ball.getDiameter(), ball.getDiameter());
 
         // Paint Bricks
         g.setColor(BRICK_COLOR);
-        for (Brick brick : topBrickRow)
-        {
-            g.fillRect(brick.x, brick.y, brick.width, brick.height);
-        }
-        for (Brick brick : midBrickRow)
-        {
-            g.fillRect(brick.x, brick.y, brick.width, brick.height);
-        }
-        for (Brick brick : botBrickRow)
-        {
-            g.fillRect(brick.x, brick.y, brick.width, brick.height);
-        }
+        bricksManager.getBrickGrid()
+                     .stream()
+                     .flatMap(list -> list.stream())
+                     .forEach(brick -> g.fillRect(brick.x, brick.y, brick.width, brick.height));
 
         // initial information
         g.setColor(TEXT_COLOR);
@@ -215,17 +152,17 @@ public class BrickBreakerGame implements ActionListener, KeyListener
             if (initialState)
             {
                 g.drawString("Press space bar to start!",
-                             windowSettings.getWINDOW_WIDTH() / 3 + 40,
-                             windowSettings.getWINDOW_HEIGHT() / 2);
+                             WindowSettings.getWINDOW_WIDTH() / 3 + 40,
+                             WindowSettings.getWINDOW_HEIGHT() / 2);
                 g.drawString("Use arrows to move the racket",
-                             windowSettings.getWINDOW_WIDTH() / 3 + 10,
-                             windowSettings.getWINDOW_HEIGHT() / 2 + INFORMATION_FONT_SIZE);
+                             WindowSettings.getWINDOW_WIDTH() / 3 + 10,
+                             WindowSettings.getWINDOW_HEIGHT() / 2 + INFORMATION_FONT_SIZE);
             }
             else
             {
                 g.drawString("Press enter to reset!",
-                             windowSettings.getWINDOW_WIDTH() / 3 + 40,
-                             windowSettings.getWINDOW_HEIGHT() / 2);
+                             WindowSettings.getWINDOW_WIDTH() / 3 + 40,
+                             WindowSettings.getWINDOW_HEIGHT() / 2);
             }
         }
         // score info
@@ -252,7 +189,7 @@ public class BrickBreakerGame implements ActionListener, KeyListener
                 }
                 break;
             case KeyEvent.VK_RIGHT:
-                if (racket.x + racket.width < windowSettings.getWINDOW_WIDTH() && timer.isRunning())
+                if (racket.x + racket.width < WindowSettings.getWINDOW_WIDTH() && timer.isRunning())
                 {
                     racket.x += RACKET_SPEED;
                 }
@@ -269,42 +206,21 @@ public class BrickBreakerGame implements ActionListener, KeyListener
 
     private void resetGame()
     {
-        initializeBricks();
-        Racket.resetRacketPosition();
-        Ball.resetBallPosition();
+        bricksManager.resetBrickGrid();
+        racket.resetPosition();
+        ball.resetBallPosition();
 
-        yAxisBallMotionFactor = -3;
-        xAxisBallMotionFactor = -3;
+        yAxisBallMotionFactor = INIT_Y_AXIS_BALL_MOTION_FACTOR;
+        xAxisBallMotionFactor = INIT_X_AXIS_BALL_MOTION_FACTOR;
         playerScore = 0;
 
         // Ball will randomly fly to left or right side
-        if ((random.nextInt(100) + 1) % 2 == 0)
+        if (random.nextInt(10) % 2 == 0)
         {
             xAxisBallMotionFactor = xAxisBallMotionFactor * (-1);
         }
         initialState = true;
-    }
-
-    private void initializeBricks()
-    {
-        topBrickRow.clear();
-        midBrickRow.clear();
-        botBrickRow.clear();
-
-        topBrickRow.add(new Brick(120, 50));
-        midBrickRow.add(new Brick(120, 50 + GAP_BETWEEN_BRICKS + Brick.getBrickHeight()));
-        botBrickRow.add(new Brick(120, 50 + 2 * GAP_BETWEEN_BRICKS + 2 * Brick.getBrickHeight()));
-        for (int i = 1; i < 13; i++)
-        {
-            topBrickRow.add(new Brick(
-                    topBrickRow.get(topBrickRow.size() - 1).x + Brick.getBrickWidth() + GAP_BETWEEN_BRICKS, 50));
-            midBrickRow.add(new Brick(
-                    midBrickRow.get(midBrickRow.size() - 1).x + Brick.getBrickWidth() + GAP_BETWEEN_BRICKS,
-                    50 + GAP_BETWEEN_BRICKS + Brick.getBrickHeight()));
-            botBrickRow.add(new Brick(
-                    botBrickRow.get(botBrickRow.size() - 1).x + Brick.getBrickWidth() + GAP_BETWEEN_BRICKS,
-                    50 + 2 * GAP_BETWEEN_BRICKS + 2 * Brick.getBrickHeight()));
-        }
+        collisionWithRacketPossible = true;
     }
 
     @Override

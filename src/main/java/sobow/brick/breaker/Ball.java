@@ -5,24 +5,26 @@ import java.awt.Rectangle;
 public class Ball
 {
     private static Ball instance;
-    private static Racket racket = Racket.getInstance();
-    private static final WindowSettings WINDOW_SETTINGS = WindowSettings.getInstance();
+    private static Rectangle bounds = new Rectangle();
 
     private static final int DIAMETER = 20;
+    private static final int INIT_X_POS_TOP_LEFT_CORNER = WindowSettings.getWINDOW_WIDTH() / 2 - 10;
+    private static final int INIT_Y_POS_TOP_LEFT_CORNER = (int) (WindowSettings.getWINDOW_HEIGHT() / 1.3);
 
-    private static final int INIT_X_POS_TOP_LEFT_CORNER = WINDOW_SETTINGS.getWINDOW_WIDTH() / 2 - 10;
-    private static final int INIT_Y_POS_TOP_LEFT_CORNER =
-            WINDOW_SETTINGS.getWINDOW_HEIGHT() - WINDOW_SETTINGS.getWINDOW_TOP_BAR_HEIGHT() - 50 - racket.height
-            - DIAMETER;
-
-    private static int xPosLeftTopCorner;
-    private static int yPosLeftTopCorner;
-
-    private static Rectangle bounds = new Rectangle();
+    private int xPosLeftTopCorner;
+    private int yPosLeftTopCorner;
+    private int diameter;
 
     private Ball()
     {
         resetBallPosition();
+    }
+
+    public void resetBallPosition()
+    {
+        xPosLeftTopCorner = INIT_X_POS_TOP_LEFT_CORNER;
+        yPosLeftTopCorner = INIT_Y_POS_TOP_LEFT_CORNER;
+        diameter = DIAMETER;
     }
 
     public static Ball getInstance()
@@ -43,52 +45,47 @@ public class Ball
         }
     }
 
-    public static void resetBallPosition()
-    {
-        xPosLeftTopCorner = INIT_X_POS_TOP_LEFT_CORNER;
-        yPosLeftTopCorner = INIT_Y_POS_TOP_LEFT_CORNER;
-    }
 
-    public static void increseXby(int additionalX)
+    public void increaseXby(int additionalX)
     {
         xPosLeftTopCorner = xPosLeftTopCorner + additionalX;
     }
 
-    public static void increseYby(int additionalY)
+    public void increaseYby(int additionalY)
     {
         yPosLeftTopCorner = yPosLeftTopCorner + additionalY;
     }
 
-    public static Rectangle getBounds()
+    public Rectangle getBounds()
     {
         bounds.x = xPosLeftTopCorner;
         bounds.y = yPosLeftTopCorner;
-        bounds.width = bounds.height = DIAMETER;
+        bounds.width = bounds.height = diameter;
         return bounds;
     }
 
-    public static int getxPosLeftTopCorner()
+    public int getXPosLeftTopCorner()
     {
         return xPosLeftTopCorner;
     }
 
-    public static int getyPosLeftTopCorner()
+    public int getYPosLeftTopCorner()
     {
         return yPosLeftTopCorner;
     }
 
-    public static int getDiameter()
+    public int getDiameter()
     {
-        return DIAMETER;
+        return diameter;
     }
 
-    public static int getXCenter()
+    public int getXCenter()
     {
-        return xPosLeftTopCorner + DIAMETER / 2;
+        return xPosLeftTopCorner + diameter / 2;
     }
 
-    public static int getYCenter()
+    public int getYCenter()
     {
-        return yPosLeftTopCorner + DIAMETER / 2;
+        return yPosLeftTopCorner + diameter / 2;
     }
 }
