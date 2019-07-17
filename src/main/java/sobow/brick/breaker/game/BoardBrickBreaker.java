@@ -12,8 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import sobow.brick.breaker.dto.BrickCollisionDTO;
 import sobow.brick.breaker.level.Ball;
-import sobow.brick.breaker.level.Brick;
-import sobow.brick.breaker.level.BricksManager;
+import sobow.brick.breaker.level.Bricks;
+import sobow.brick.breaker.level.Bricks.Brick;
 import sobow.brick.breaker.level.Racket;
 import sobow.brick.breaker.services.CollisionResolver;
 import sobow.brick.breaker.settings.WindowSettings;
@@ -24,11 +24,10 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
 
     private Racket racket = Racket.getInstance();
     private Ball ball = Ball.getInstance();
-    private BricksManager bricksManager = BricksManager.getInstance();
+    private Bricks bricks = Bricks.getInstance();
     private Timer timer = new Timer(20, this);
     private Random random = new Random();
     private BrickCollisionDTO brickCollisionDTO;
-    private Brick brickWhichCollidedWithBall;
 
     private int playerScore;
     private int yAxisBallMotionFactor;
@@ -44,7 +43,8 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
 
     private final Color BACKGROUND_COLOR = Color.black;
     private final Color TEXT_COLOR = Color.LIGHT_GRAY;
-    private final Color BRICK_COLOR = Color.GRAY;
+
+    private Brick brickWhichCollidedWithBall;
 
     public static BoardBrickBreaker getInstance()
     {
@@ -77,15 +77,15 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
     {
         repaint();
 
-        brickCollisionDTO = CollisionResolver.withBricks(bricksManager.getBrickGrid(), ball);
+        brickCollisionDTO = CollisionResolver.withBricks();
         if (brickCollisionDTO.isCollisionDetected())
         {
-            brickWhichCollidedWithBall = bricksManager.getBrick(brickCollisionDTO.getRowIndex(),
-                                                                brickCollisionDTO.getColumnIndex());
+            brickWhichCollidedWithBall = bricks.getBrick(brickCollisionDTO.getRowIndex(),
+                                                         brickCollisionDTO.getColumnIndex());
             playerScore++;
 
             // if collision occured and ball center is located below or above brick
-            if (ball.getYCenter() >= brickWhichCollidedWithBall.y + Brick.getBrickHeight()
+            if (ball.getYCenter() >= brickWhichCollidedWithBall.y + bricks.getBrickHeight()
                 || ball.getYCenter() <= brickWhichCollidedWithBall.y)
             {
                 yAxisBallMotionFactor *= -1;
@@ -94,25 +94,25 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
             {
                 xAxisBallMotionFactor *= -1;
             }
-            bricksManager.removeBrick(brickCollisionDTO.getRowIndex(), brickCollisionDTO.getColumnIndex());
+            bricks.removeBrick(brickCollisionDTO.getRowIndex(), brickCollisionDTO.getColumnIndex());
             collisionWithRacketPossible = true;
         }
-        else if (CollisionResolver.withLeftWall(ball) || CollisionResolver.withRightWall(ball))
+        else if (CollisionResolver.ballWithLeftWall() || CollisionResolver.ballWithRightWall())
         {
             xAxisBallMotionFactor *= -1;
             collisionWithRacketPossible = true;
         }
-        else if (CollisionResolver.withTopWall(ball))
+        else if (CollisionResolver.ballWithTopWall())
         {
             yAxisBallMotionFactor *= -1;
             collisionWithRacketPossible = true;
         }
-        else if (CollisionResolver.withRacket(ball, racket, collisionWithRacketPossible))
+        else if (CollisionResolver.ballWithRacket(collisionWithRacketPossible))
         {
             yAxisBallMotionFactor *= -1;
             collisionWithRacketPossible = false;
         }
-        else if (CollisionResolver.withBottomWall(ball))
+        else if (CollisionResolver.ballWithBottomWall())
         {
             timer.stop();
         }
@@ -121,7 +121,7 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
         ball.increaseXby(xAxisBallMotionFactor);
         ball.increaseYby(yAxisBallMotionFactor);
 
-        if (bricksManager.isBrickGridEmpty())
+        if (bricks.isBrickGridEmpty())
         {
             timer.stop();
         }
@@ -136,13 +136,8 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
 
         racket.paint(g);
         ball.paint(g);
+        bricks.paint(g);
 
-        // Paint Bricks
-        g.setColor(BRICK_COLOR);
-        bricksManager.getBrickGrid()
-                     .stream()
-                     .flatMap(list -> list.stream())
-                     .forEach(brick -> g.fillRect(brick.x, brick.y, brick.width, brick.height));
 
         // initial information
         g.setColor(TEXT_COLOR);
@@ -164,7 +159,6 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
         // score info
         g.drawString("Score: " + playerScore, 25, 25);
     }
-
 
     private class MyKeyAdapter extends KeyAdapter
     {
@@ -205,7 +199,7 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
 
     private void resetGame()
     {
-        bricksManager.resetBrickGrid();
+        bricks.resetBrickGrid();
         racket.reset();
         ball.reset();
 

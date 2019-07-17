@@ -7,15 +7,16 @@ import sobow.brick.breaker.settings.WindowSettings;
 
 public class Ball
 {
+    private static final Color COLOR = Color.CYAN.darker().darker();
+
     private static final int DIAMETER = 20;
     private static final int INIT_X_POS_TOP_LEFT_CORNER =
             WindowSettings.WIDTH / 2 - DIAMETER / 2; // center the ball horizontally
     private static final int INIT_Y_POS_TOP_LEFT_CORNER = 450;
 
     private static Ball instance;
-    private static Rectangle bounds = new Rectangle();
 
-    private final Color COLOR = Color.CYAN.darker().darker();
+    private Rectangle bounds = new Rectangle();
 
     private int xPosLeftTopCorner;
     private int yPosLeftTopCorner;
