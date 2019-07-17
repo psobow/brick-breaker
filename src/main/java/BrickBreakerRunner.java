@@ -1,5 +1,5 @@
 import java.awt.EventQueue;
-import sobow.brick.breaker.RenderGameRelationInitializator;
+import sobow.brick.breaker.game.RenderGameRelationInitializator;
 
 public class BrickBreakerRunner
 {

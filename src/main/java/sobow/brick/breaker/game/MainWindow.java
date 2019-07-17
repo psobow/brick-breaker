@@ -1,6 +1,7 @@
-package sobow.brick.breaker;
+package sobow.brick.breaker.game;
 
 import javax.swing.JFrame;
+import sobow.brick.breaker.settings.WindowSettings;
 
 public class MainWindow extends JFrame
 {

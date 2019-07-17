@@ -1,4 +1,4 @@
-package sobow.brick.breaker;
+package sobow.brick.breaker.game;
 
 import java.awt.Graphics;
 import javax.swing.JPanel;

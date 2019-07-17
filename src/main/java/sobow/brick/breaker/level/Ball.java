@@ -1,6 +1,7 @@
-package sobow.brick.breaker;
+package sobow.brick.breaker.level;
 
 import java.awt.Rectangle;
+import sobow.brick.breaker.settings.WindowSettings;
 
 public class Ball
 {

@@ -1,4 +1,4 @@
-package sobow.brick.breaker;
+package sobow.brick.breaker.game;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -9,6 +9,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
 import javax.swing.Timer;
+import sobow.brick.breaker.dto.BrickCollisionDTO;
+import sobow.brick.breaker.level.Ball;
+import sobow.brick.breaker.level.Brick;
+import sobow.brick.breaker.level.BricksManager;
+import sobow.brick.breaker.level.Racket;
+import sobow.brick.breaker.services.CollisionResolver;
+import sobow.brick.breaker.settings.WindowSettings;
 
 public class BrickBreakerGame implements ActionListener, KeyListener
 {

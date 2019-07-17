@@ -1,4 +1,4 @@
-package sobow.brick.breaker;
+package sobow.brick.breaker.settings;
 
 
 public class WindowSettings

@@ -1,6 +1,11 @@
-package sobow.brick.breaker;
+package sobow.brick.breaker.services;
 
 import java.util.List;
+import sobow.brick.breaker.dto.BrickCollisionDTO;
+import sobow.brick.breaker.level.Ball;
+import sobow.brick.breaker.level.Brick;
+import sobow.brick.breaker.level.Racket;
+import sobow.brick.breaker.settings.WindowSettings;
 
 public class CollisionResolver
 {
