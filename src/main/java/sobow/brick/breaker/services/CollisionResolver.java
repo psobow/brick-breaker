@@ -20,7 +20,7 @@ public class CollisionResolver
 
     public static boolean withRightWall(Ball ball)
     {
-        return ball.getXPosLeftTopCorner() + ball.getDiameter() >= WindowSettings.getWINDOW_WIDTH();
+        return ball.getXPosLeftTopCorner() + ball.getDiameter() >= WindowSettings.WIDTH;
     }
 
     public static boolean withTopWall(Ball ball)
@@ -31,7 +31,7 @@ public class CollisionResolver
     public static boolean withBottomWall(Ball ball)
     {
         return ball.getYPosLeftTopCorner() + ball.getDiameter()
-               >= WindowSettings.getWINDOW_HEIGHT() - WindowSettings.getWINDOW_TOP_BAR_HEIGHT();
+               >= WindowSettings.HEIGHT - WindowSettings.WINDOW_TOP_BAR_HEIGHT;
     }
 
     public static boolean withRacket(Ball ball, Racket racket, boolean isCollisionPossible)

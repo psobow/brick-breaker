@@ -11,7 +11,7 @@ public class MainWindow extends JFrame
     {
         add(RENDER_PANEL);
         setTitle("Brick Breaker");
-        setSize(WindowSettings.getWINDOW_WIDTH(), WindowSettings.getWINDOW_HEIGHT());
+        setSize(WindowSettings.WIDTH, WindowSettings.HEIGHT);
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

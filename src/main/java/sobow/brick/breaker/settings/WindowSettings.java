@@ -1,27 +1,10 @@
 package sobow.brick.breaker.settings;
 
-
-public class WindowSettings
+public interface WindowSettings
 {
-    private static final int WINDOW_WIDTH = 960;
-    private static final int WINDOW_HEIGHT = 540;
-    private static final int WINDOW_TOP_BAR_HEIGHT = 30;
+    String TITLE = "Brick Breaker";
 
-    private WindowSettings() {}
-
-
-    public static int getWINDOW_WIDTH()
-    {
-        return WINDOW_WIDTH;
-    }
-
-    public static int getWINDOW_HEIGHT()
-    {
-        return WINDOW_HEIGHT;
-    }
-
-    public static int getWINDOW_TOP_BAR_HEIGHT()
-    {
-        return WINDOW_TOP_BAR_HEIGHT;
-    }
+    int WIDTH = 960;
+    int HEIGHT = 540;
+    int WINDOW_TOP_BAR_HEIGHT = 30;
 }

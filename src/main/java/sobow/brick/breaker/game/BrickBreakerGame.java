@@ -134,7 +134,7 @@ public class BrickBreakerGame implements ActionListener, KeyListener
     {
         // Paint background
         g.setColor(BACKGROUND_COLOR);
-        g.fillRect(0, 0, WindowSettings.getWINDOW_WIDTH(), WindowSettings.getWINDOW_HEIGHT());
+        g.fillRect(0, 0, WindowSettings.WIDTH, WindowSettings.HEIGHT);
 
         // Paint Racket
         g.setColor(RACKET_COLOR);
@@ -158,18 +158,14 @@ public class BrickBreakerGame implements ActionListener, KeyListener
         {
             if (initialState)
             {
-                g.drawString("Press space bar to start!",
-                             WindowSettings.getWINDOW_WIDTH() / 3 + 40,
-                             WindowSettings.getWINDOW_HEIGHT() / 2);
+                g.drawString("Press space bar to start!", WindowSettings.WIDTH / 3 + 40, WindowSettings.HEIGHT / 2);
                 g.drawString("Use arrows to move the racket",
-                             WindowSettings.getWINDOW_WIDTH() / 3 + 10,
-                             WindowSettings.getWINDOW_HEIGHT() / 2 + INFORMATION_FONT_SIZE);
+                             WindowSettings.WIDTH / 3 + 10,
+                             WindowSettings.HEIGHT / 2 + INFORMATION_FONT_SIZE);
             }
             else
             {
-                g.drawString("Press enter to reset!",
-                             WindowSettings.getWINDOW_WIDTH() / 3 + 40,
-                             WindowSettings.getWINDOW_HEIGHT() / 2);
+                g.drawString("Press enter to reset!", WindowSettings.WIDTH / 3 + 40, WindowSettings.HEIGHT / 2);
             }
         }
         // score info
@@ -196,7 +192,7 @@ public class BrickBreakerGame implements ActionListener, KeyListener
                 }
                 break;
             case KeyEvent.VK_RIGHT:
-                if (racket.x + racket.width < WindowSettings.getWINDOW_WIDTH() && timer.isRunning())
+                if (racket.x + racket.width < WindowSettings.WIDTH && timer.isRunning())
                 {
                     racket.x += RACKET_SPEED;
                 }

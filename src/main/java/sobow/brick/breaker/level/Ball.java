@@ -9,8 +9,8 @@ public class Ball
     private static Rectangle bounds = new Rectangle();
 
     private static final int DIAMETER = 20;
-    private static final int INIT_X_POS_TOP_LEFT_CORNER = WindowSettings.getWINDOW_WIDTH() / 2 - 10;
-    private static final int INIT_Y_POS_TOP_LEFT_CORNER = (int) (WindowSettings.getWINDOW_HEIGHT() / 1.3);
+    private static final int INIT_X_POS_TOP_LEFT_CORNER = WindowSettings.WIDTH / 2 - 10;
+    private static final int INIT_Y_POS_TOP_LEFT_CORNER = (int) (WindowSettings.HEIGHT / 1.3);
 
     private int xPosLeftTopCorner;
     private int yPosLeftTopCorner;
