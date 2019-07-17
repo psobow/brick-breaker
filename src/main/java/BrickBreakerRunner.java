@@ -8,3 +8,9 @@ public class BrickBreakerRunner
         EventQueue.invokeLater(() -> new MainWindow());
     }
 }
+/*
+TODO: zmienić poruszanie się rakietki, użyć KeyPressed i KeyRelesead które zmieniają wartość prywatnej zmiennej dx dodać metody move() i update()
+TODO: uprośić API wszystkich klas
+TODO: posprzątać kolizje
+
+ */

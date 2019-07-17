@@ -1,7 +1,9 @@
 package sobow.brick.breaker.game;
 
+import static java.awt.event.KeyEvent.VK_ENTER;
+import static java.awt.event.KeyEvent.VK_SPACE;
+
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,8 +17,8 @@ import sobow.brick.breaker.level.Ball;
 import sobow.brick.breaker.level.Bricks;
 import sobow.brick.breaker.level.Bricks.Brick;
 import sobow.brick.breaker.level.Racket;
+import sobow.brick.breaker.level.TextMessages;
 import sobow.brick.breaker.services.CollisionResolver;
-import sobow.brick.breaker.settings.WindowSettings;
 
 public class BoardBrickBreaker extends JPanel implements ActionListener
 {
@@ -25,6 +27,7 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
     private Racket racket = Racket.getInstance();
     private Ball ball = Ball.getInstance();
     private Bricks bricks = Bricks.getInstance();
+    private TextMessages textMessages = TextMessages.getInstance();
     private Timer timer = new Timer(20, this);
     private Random random = new Random();
     private BrickCollisionDTO brickCollisionDTO;
@@ -36,13 +39,10 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
     private boolean initialState;
     private boolean collisionWithRacketPossible;
 
-    private final int INFORMATION_FONT_SIZE = 20;
-    private final int RACKET_SPEED = 15;
     private final int INIT_X_AXIS_BALL_MOTION_FACTOR = -3;
     private final int INIT_Y_AXIS_BALL_MOTION_FACTOR = -3;
 
     private final Color BACKGROUND_COLOR = Color.black;
-    private final Color TEXT_COLOR = Color.LIGHT_GRAY;
 
     private Brick brickWhichCollidedWithBall;
 
@@ -137,27 +137,7 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
         racket.paint(g);
         ball.paint(g);
         bricks.paint(g);
-
-
-        // initial information
-        g.setColor(TEXT_COLOR);
-        g.setFont(new Font("Arial", 1, INFORMATION_FONT_SIZE));
-        if (timer.isRunning() == false)
-        {
-            if (initialState)
-            {
-                g.drawString("Press space bar to start!", WindowSettings.WIDTH / 3 + 40, WindowSettings.HEIGHT / 2);
-                g.drawString("Use arrows to move the racket",
-                             WindowSettings.WIDTH / 3 + 10,
-                             WindowSettings.HEIGHT / 2 + INFORMATION_FONT_SIZE);
-            }
-            else
-            {
-                g.drawString("Press enter to reset!", WindowSettings.WIDTH / 3 + 40, WindowSettings.HEIGHT / 2);
-            }
-        }
-        // score info
-        g.drawString("Score: " + playerScore, 25, 25);
+        textMessages.paint(g, timer.isRunning(), initialState, playerScore);
     }
 
     private class MyKeyAdapter extends KeyAdapter
@@ -165,34 +145,22 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
         @Override
         public void keyPressed(KeyEvent e)
         {
+            boolean isTimerRunning = timer.isRunning();
             int keyID = e.getKeyCode();
-            switch (keyID)
+
+            if (isTimerRunning)
             {
-                case KeyEvent.VK_SPACE:
-                    if (timer.isRunning() == false && initialState == true)
-                    {
-                        timer.start();
-                        initialState = false;
-                    }
-                    break;
-                case KeyEvent.VK_LEFT:
-                    if (racket.x > 0 && timer.isRunning())
-                    {
-                        racket.x -= RACKET_SPEED;
-                    }
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    if (racket.x + racket.width < WindowSettings.WIDTH && timer.isRunning())
-                    {
-                        racket.x += RACKET_SPEED;
-                    }
-                    break;
-                case KeyEvent.VK_ENTER:
-                    resetGame();
-                    repaint();
-                    break;
-                default:
-                    break;
+                racket.KeyPressed(e);
+            }
+            else if (initialState && keyID == VK_SPACE)
+            {
+                timer.start();
+                initialState = false;
+            }
+            else if (!initialState && keyID == VK_ENTER)
+            {
+                resetGame();
+                repaint();
             }
         }
     }
