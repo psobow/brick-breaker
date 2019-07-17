@@ -1,32 +1,25 @@
 package sobow.brick.breaker.level;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import sobow.brick.breaker.settings.WindowSettings;
 
 public class Ball
 {
+    private static final int DIAMETER = 20;
+    private static final int INIT_X_POS_TOP_LEFT_CORNER =
+            WindowSettings.WIDTH / 2 - DIAMETER / 2; // center the ball horizontally
+    private static final int INIT_Y_POS_TOP_LEFT_CORNER = 450;
+
     private static Ball instance;
     private static Rectangle bounds = new Rectangle();
 
-    private static final int DIAMETER = 20;
-    private static final int INIT_X_POS_TOP_LEFT_CORNER = WindowSettings.WIDTH / 2 - 10;
-    private static final int INIT_Y_POS_TOP_LEFT_CORNER = (int) (WindowSettings.HEIGHT / 1.3);
+    private final Color COLOR = Color.CYAN.darker().darker();
 
     private int xPosLeftTopCorner;
     private int yPosLeftTopCorner;
     private int diameter;
-
-    private Ball()
-    {
-        resetBallPosition();
-    }
-
-    public void resetBallPosition()
-    {
-        xPosLeftTopCorner = INIT_X_POS_TOP_LEFT_CORNER;
-        yPosLeftTopCorner = INIT_Y_POS_TOP_LEFT_CORNER;
-        diameter = DIAMETER;
-    }
 
     public static Ball getInstance()
     {
@@ -46,6 +39,23 @@ public class Ball
         }
     }
 
+    private Ball()
+    {
+        reset();
+    }
+
+    public void reset()
+    {
+        xPosLeftTopCorner = INIT_X_POS_TOP_LEFT_CORNER;
+        yPosLeftTopCorner = INIT_Y_POS_TOP_LEFT_CORNER;
+        diameter = DIAMETER;
+    }
+
+    public void paint(Graphics g)
+    {
+        g.setColor(COLOR);
+        g.fillOval(xPosLeftTopCorner, yPosLeftTopCorner, diameter, diameter);
+    }
 
     public void increaseXby(int additionalX)
     {

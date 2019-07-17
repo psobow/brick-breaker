@@ -43,9 +43,7 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
     private final int INIT_Y_AXIS_BALL_MOTION_FACTOR = -3;
 
     private final Color BACKGROUND_COLOR = Color.black;
-    private final Color RACKET_COLOR = Color.green.darker().darker();
     private final Color TEXT_COLOR = Color.LIGHT_GRAY;
-    private final Color BALL_COLOR = Color.CYAN.darker().darker();
     private final Color BRICK_COLOR = Color.GRAY;
 
     public static BoardBrickBreaker getInstance()
@@ -136,14 +134,8 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
         super.paintComponent(g);
         revalidate();
 
-
-        // Paint Racket
-        g.setColor(RACKET_COLOR);
-        g.fillRect(racket.x, racket.y, racket.width, racket.height);
-
-        // Paint Ball
-        g.setColor(BALL_COLOR);
-        g.fillOval(ball.getXPosLeftTopCorner(), ball.getYPosLeftTopCorner(), ball.getDiameter(), ball.getDiameter());
+        racket.paint(g);
+        ball.paint(g);
 
         // Paint Bricks
         g.setColor(BRICK_COLOR);
@@ -214,8 +206,8 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
     private void resetGame()
     {
         bricksManager.resetBrickGrid();
-        racket.resetPosition();
-        ball.resetBallPosition();
+        racket.reset();
+        ball.reset();
 
         yAxisBallMotionFactor = INIT_Y_AXIS_BALL_MOTION_FACTOR;
         xAxisBallMotionFactor = INIT_X_AXIS_BALL_MOTION_FACTOR;

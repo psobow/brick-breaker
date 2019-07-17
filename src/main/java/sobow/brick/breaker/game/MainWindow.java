@@ -8,7 +8,7 @@ public class MainWindow extends JFrame
     public MainWindow()
     {
         add(BoardBrickBreaker.getInstance());
-        setTitle("Brick Breaker");
+        setTitle(WindowSettings.TITLE);
         setSize(WindowSettings.WIDTH, WindowSettings.HEIGHT);
         setLocationRelativeTo(null);
         setResizable(false);
