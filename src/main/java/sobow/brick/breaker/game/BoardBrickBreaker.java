@@ -5,9 +5,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.Random;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 import sobow.brick.breaker.dto.BrickCollisionDTO;
 import sobow.brick.breaker.level.Ball;
@@ -17,9 +18,9 @@ import sobow.brick.breaker.level.Racket;
 import sobow.brick.breaker.services.CollisionResolver;
 import sobow.brick.breaker.settings.WindowSettings;
 
-public class BrickBreakerGame implements ActionListener, KeyListener
+public class BoardBrickBreaker extends JPanel implements ActionListener
 {
-    private static BrickBreakerGame instance;
+    private static BoardBrickBreaker instance;
 
     private Racket racket = Racket.getInstance();
     private Ball ball = Ball.getInstance();
@@ -28,7 +29,6 @@ public class BrickBreakerGame implements ActionListener, KeyListener
     private Random random = new Random();
     private BrickCollisionDTO brickCollisionDTO;
     private Brick brickWhichCollidedWithBall;
-    private RenderPanel renderPanel;
 
     private int playerScore;
     private int yAxisBallMotionFactor;
@@ -48,36 +48,36 @@ public class BrickBreakerGame implements ActionListener, KeyListener
     private final Color BALL_COLOR = Color.CYAN.darker().darker();
     private final Color BRICK_COLOR = Color.GRAY;
 
-    private BrickBreakerGame()
-    {
-        MainWindow mainWindow = new MainWindow();
-        mainWindow.addKeyListener(this);
-        resetGame();
-    }
-
-    public static BrickBreakerGame getInstance()
+    public static BoardBrickBreaker getInstance()
     {
         if (instance == null)
         {
-            synchronized (BrickBreakerGame.class)
+            synchronized (BoardBrickBreaker.class)
             {
                 if (instance == null)
                 {
-                    instance = new BrickBreakerGame();
+                    instance = new BoardBrickBreaker();
                 }
             }
         }
-        synchronized (BrickBreakerGame.class)
+        synchronized (BoardBrickBreaker.class)
         {
             return instance;
         }
     }
 
+    private BoardBrickBreaker()
+    {
+        setBackground(BACKGROUND_COLOR);
+        addKeyListener(new MyKeyAdapter());
+        setFocusable(true);
+        resetGame();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        renderPanel.revalidate();
-        renderPanel.repaint();
+        repaint();
 
         brickCollisionDTO = CollisionResolver.withBricks(bricksManager.getBrickGrid(), ball);
         if (brickCollisionDTO.isCollisionDetected())
@@ -130,11 +130,12 @@ public class BrickBreakerGame implements ActionListener, KeyListener
 
     }
 
-    public void repaint(Graphics g)
+    @Override
+    protected void paintComponent(Graphics g)
     {
-        // Paint background
-        g.setColor(BACKGROUND_COLOR);
-        g.fillRect(0, 0, WindowSettings.WIDTH, WindowSettings.HEIGHT);
+        super.paintComponent(g);
+        revalidate();
+
 
         // Paint Racket
         g.setColor(RACKET_COLOR);
@@ -172,38 +173,41 @@ public class BrickBreakerGame implements ActionListener, KeyListener
         g.drawString("Score: " + playerScore, 25, 25);
     }
 
-    @Override
-    public void keyPressed(KeyEvent e)
+
+    private class MyKeyAdapter extends KeyAdapter
     {
-        int keyID = e.getKeyCode();
-        switch (keyID)
+        @Override
+        public void keyPressed(KeyEvent e)
         {
-            case KeyEvent.VK_SPACE:
-                if (timer.isRunning() == false && initialState == true)
-                {
-                    timer.start();
-                    initialState = false;
-                }
-                break;
-            case KeyEvent.VK_LEFT:
-                if (racket.x > 0 && timer.isRunning())
-                {
-                    racket.x -= RACKET_SPEED;
-                }
-                break;
-            case KeyEvent.VK_RIGHT:
-                if (racket.x + racket.width < WindowSettings.WIDTH && timer.isRunning())
-                {
-                    racket.x += RACKET_SPEED;
-                }
-                break;
-            case KeyEvent.VK_ENTER:
-                resetGame();
-                renderPanel.revalidate();
-                renderPanel.repaint();
-                break;
-            default:
-                break;
+            int keyID = e.getKeyCode();
+            switch (keyID)
+            {
+                case KeyEvent.VK_SPACE:
+                    if (timer.isRunning() == false && initialState == true)
+                    {
+                        timer.start();
+                        initialState = false;
+                    }
+                    break;
+                case KeyEvent.VK_LEFT:
+                    if (racket.x > 0 && timer.isRunning())
+                    {
+                        racket.x -= RACKET_SPEED;
+                    }
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    if (racket.x + racket.width < WindowSettings.WIDTH && timer.isRunning())
+                    {
+                        racket.x += RACKET_SPEED;
+                    }
+                    break;
+                case KeyEvent.VK_ENTER:
+                    resetGame();
+                    repaint();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -224,22 +228,5 @@ public class BrickBreakerGame implements ActionListener, KeyListener
         }
         initialState = true;
         collisionWithRacketPossible = true;
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e)
-    {
-
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e)
-    {
-
-    }
-
-    public void setRenderPanelInstance(RenderPanel renderPanel)
-    {
-        this.renderPanel = renderPanel;
     }
 }

@@ -5,11 +5,9 @@ import sobow.brick.breaker.settings.WindowSettings;
 
 public class MainWindow extends JFrame
 {
-    private final RenderPanel RENDER_PANEL = RenderPanel.getInstance();
-
     public MainWindow()
     {
-        add(RENDER_PANEL);
+        add(BoardBrickBreaker.getInstance());
         setTitle("Brick Breaker");
         setSize(WindowSettings.WIDTH, WindowSettings.HEIGHT);
         setLocationRelativeTo(null);

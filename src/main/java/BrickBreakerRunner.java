@@ -1,10 +1,10 @@
 import java.awt.EventQueue;
-import sobow.brick.breaker.game.RenderGameRelationInitializator;
+import sobow.brick.breaker.game.MainWindow;
 
 public class BrickBreakerRunner
 {
     public static void main(String[] args)
     {
-        EventQueue.invokeLater(RenderGameRelationInitializator::new);
+        EventQueue.invokeLater(() -> new MainWindow());
     }
 }
