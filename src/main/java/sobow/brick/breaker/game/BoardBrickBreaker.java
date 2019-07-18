@@ -15,7 +15,7 @@ import sobow.brick.breaker.level.Ball;
 import sobow.brick.breaker.level.Bricks;
 import sobow.brick.breaker.level.Racket;
 import sobow.brick.breaker.level.TextMessages;
-import sobow.brick.breaker.services.CollisionResolver;
+import sobow.brick.breaker.services.CollisionService;
 
 public class BoardBrickBreaker extends JPanel implements ActionListener
 {
@@ -63,7 +63,7 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
     {
         repaint();
         ball.update();
-        CollisionResolver.resolveCollision();
+        CollisionService.resolveCollision();
         if (ball.isTouchingBottom() || bricks.isBrickGridEmpty())
         {
             timer.stop();
@@ -109,7 +109,7 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
 
     private void resetGame()
     {
-        bricks.resetBrickGrid();
+        bricks.reset();
         racket.reset();
         ball.reset();
 

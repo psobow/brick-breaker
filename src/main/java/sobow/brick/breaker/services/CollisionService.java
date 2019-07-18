@@ -4,18 +4,17 @@ package sobow.brick.breaker.services;
 
 import sobow.brick.breaker.level.Ball;
 import sobow.brick.breaker.level.Bricks;
-import sobow.brick.breaker.level.Bricks.Brick;
 import sobow.brick.breaker.level.Racket;
 import sobow.brick.breaker.settings.WindowSettings;
 
-public class CollisionResolver
+public class CollisionService
 {
     private static Ball ball = Ball.getInstance();
     private static Bricks bricks = Bricks.getInstance();
     private static Racket racket = Racket.getInstance();
     private static boolean isBallCollisionWithRacketPossible = true;
 
-    private CollisionResolver() {}
+    private CollisionService() {}
 
     public static void resolveCollision()
     {
@@ -78,15 +77,17 @@ public class CollisionResolver
     private static void ballWithBricks()
     {
         loop:
-        for (int row = 0; row < bricks.getBrickGrid().size(); row++)
+        for (int row = 0; row < Bricks.getQuantityOfRows(); row++)
         {
-            for (int column = 0; column < bricks.getBrickGrid().get(row).size(); column++)
+            for (int column = 0; column < bricks.getQuantityOfBricksInRowAt(row); column++)
             {
-                Brick brick = bricks.getBrick(row, column);
-                if (brick.intersects(ball.getBounds()))
+                if (bricks.isBrickIntersectingWith(row, column, ball.getBounds()))
                 {
+                    int brickTopLeftCornerYPosition = bricks.getBrickLeftTopCornerYPositionAt(row, column);
+
                     // if collision occured and ball center is located below or above brick
-                    if (ball.getYCenter() >= brick.y + bricks.getBrickHeight() || ball.getYCenter() <= brick.y)
+                    if (ball.getYCenter() >= brickTopLeftCornerYPosition + bricks.getBrickHeight()
+                        || ball.getYCenter() <= brickTopLeftCornerYPosition)
                     {
                         ball.revertMotionYAxis();
                     }
@@ -95,7 +96,7 @@ public class CollisionResolver
                         ball.revertMotionXAxis();
                     }
 
-                    bricks.removeBrick(row, column);
+                    bricks.removeBrickAt(row, column);
                     isBallCollisionWithRacketPossible = true;
                     break loop;
                 }
