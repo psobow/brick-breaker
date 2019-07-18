@@ -15,8 +15,8 @@ public class Ball
             WindowSettings.WIDTH / 2 - DIAMETER / 2; // center the ball horizontally
     private static final int INIT_Y_POS_TOP_LEFT_CORNER = 450;
 
-    private static final int INIT_X_AXIS_MOTION_FACTOR = -3;
-    private static final int INIT_Y_AXIS_MOTION_FACTOR = -3;
+    private static final int INIT_X_AXIS_MOTION_FACTOR = -2;
+    private static final int INIT_Y_AXIS_MOTION_FACTOR = -2;
 
     private static Ball instance;
 
@@ -27,8 +27,8 @@ public class Ball
     private int yPosLeftTopCorner;
     private int diameter;
 
-    private int yAxisMotionFactor;
-    private int xAxisMotionFactor;
+    private int dy; // derivative y axis coordinate
+    private int dx; // derivative x axis coordinate
 
     private boolean isTouchingBottom;
 
@@ -60,11 +60,11 @@ public class Ball
         xPosLeftTopCorner = INIT_X_POS_TOP_LEFT_CORNER;
         yPosLeftTopCorner = INIT_Y_POS_TOP_LEFT_CORNER;
         diameter = DIAMETER;
-        yAxisMotionFactor = INIT_Y_AXIS_MOTION_FACTOR;
-        xAxisMotionFactor = INIT_X_AXIS_MOTION_FACTOR;
+        dy = INIT_Y_AXIS_MOTION_FACTOR;
+        dx = INIT_X_AXIS_MOTION_FACTOR;
         isTouchingBottom = false;
 
-        // Ball will randomly fly to left or right side
+        // Ball will randomly start fly to left or right side at the game begining
         if (random.nextInt(10) % 2 == 0)
         {
             revertMotionXAxis();
@@ -84,18 +84,18 @@ public class Ball
 
     private void move()
     {
-        xPosLeftTopCorner += xAxisMotionFactor;
-        yPosLeftTopCorner += yAxisMotionFactor;
+        xPosLeftTopCorner += dx;
+        yPosLeftTopCorner += dy;
     }
 
     public void revertMotionXAxis()
     {
-        xAxisMotionFactor *= -1;
+        dx *= -1;
     }
 
     public void revertMotionYAxis()
     {
-        yAxisMotionFactor *= -1;
+        dy *= -1;
     }
 
     public Rectangle getBounds()

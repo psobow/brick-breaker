@@ -24,7 +24,7 @@ public class Bricks
     private static final int GAP_BETWEEN_BRICKS = 5;
     private static final int DISTANCE_BETWEEN_LEFT_WALL_AND_BRICKS = 120;
     private static final int DISTANCE_BETWEEN_TOP_WALL_AND_BRICKS = 50;
-    private static final int QUANTITY_OF_ROWS = 3;
+    private static final int QUANTITY_OF_ROWS = 4;
     private static final int INIT_QUANTITY_OF_BRICKS_IN_ROW = 13;
 
     private static Bricks instance;

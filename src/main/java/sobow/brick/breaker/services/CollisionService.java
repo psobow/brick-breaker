@@ -97,6 +97,7 @@ public class CollisionService
                     }
 
                     bricks.removeBrickAt(row, column);
+                    ScoreService.incrementScore();
                     isBallCollisionWithRacketPossible = true;
                     break loop;
                 }

@@ -16,21 +16,17 @@ import sobow.brick.breaker.level.Bricks;
 import sobow.brick.breaker.level.Racket;
 import sobow.brick.breaker.level.TextMessages;
 import sobow.brick.breaker.services.CollisionService;
+import sobow.brick.breaker.services.ScoreService;
 
 public class BoardBrickBreaker extends JPanel implements ActionListener
 {
     private static BoardBrickBreaker instance;
 
-    private Racket racket = Racket.getInstance();
-    private Ball ball = Ball.getInstance();
-    private Bricks bricks = Bricks.getInstance();
-    private TextMessages textMessages = TextMessages.getInstance();
-    private Timer timer = new Timer(20, this);
-
-    private int playerScore;
-
-    private boolean initialState;
-
+    private Racket racket;
+    private Ball ball;
+    private Bricks bricks;
+    private TextMessages textMessages;
+    private Timer timer;
 
     public static BoardBrickBreaker getInstance()
     {
@@ -52,10 +48,19 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
 
     private BoardBrickBreaker()
     {
+        initBoard();
+    }
+
+    private void initBoard()
+    {
         setBackground(Color.BLACK);
         addKeyListener(new MyKeyAdapter());
         setFocusable(true);
-        resetGame();
+        racket = Racket.getInstance();
+        ball = Ball.getInstance();
+        bricks = Bricks.getInstance();
+        textMessages = TextMessages.getInstance();
+        timer = new Timer(20, this);
     }
 
     @Override
@@ -79,7 +84,7 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
         racket.paint(g);
         ball.paint(g);
         bricks.paint(g);
-        textMessages.paint(g, timer.isRunning(), initialState, playerScore);
+        textMessages.paint(g, timer.isRunning());
     }
 
     private class MyKeyAdapter extends KeyAdapter
@@ -94,12 +99,11 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
             {
                 racket.KeyPressed(e);
             }
-            else if (initialState && keyID == VK_SPACE)
+            else if (!ball.isTouchingBottom() && keyID == VK_SPACE)
             {
                 timer.start();
-                initialState = false;
             }
-            else if (!initialState && keyID == VK_ENTER)
+            if (ball.isTouchingBottom() && keyID == VK_ENTER)
             {
                 resetGame();
                 repaint();
@@ -112,9 +116,6 @@ public class BoardBrickBreaker extends JPanel implements ActionListener
         bricks.reset();
         racket.reset();
         ball.reset();
-
-        playerScore = 0;
-
-        initialState = true;
+        ScoreService.reset();
     }
 }
