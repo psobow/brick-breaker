@@ -1,9 +1,10 @@
 package sobow.brick.breaker.services;
 
 
-import sobow.brick.breaker.dto.BrickCollisionDTO;
+
 import sobow.brick.breaker.level.Ball;
 import sobow.brick.breaker.level.Bricks;
+import sobow.brick.breaker.level.Bricks.Brick;
 import sobow.brick.breaker.level.Racket;
 import sobow.brick.breaker.settings.WindowSettings;
 
@@ -12,54 +13,93 @@ public class CollisionResolver
     private static Ball ball = Ball.getInstance();
     private static Bricks bricks = Bricks.getInstance();
     private static Racket racket = Racket.getInstance();
-    private static BrickCollisionDTO brickCollisionDTO = new BrickCollisionDTO(false, 0, 0);
-
+    private static boolean isBallCollisionWithRacketPossible = true;
 
     private CollisionResolver() {}
 
-    public static boolean ballWithLeftWall()
+    public static void resolveCollision()
     {
-        return ball.getXPosLeftTopCorner() <= 0;
+        ballWithRacket();
+
+        ballWithLeftWall();
+        ballWithRightWall();
+
+        ballWithTopWall();
+        ballWithBottomWall();
+
+        ballWithBricks();
     }
 
-    public static boolean ballWithRightWall()
+    private static void ballWithLeftWall()
     {
-        return ball.getXPosLeftTopCorner() + ball.getDiameter() >= WindowSettings.WIDTH;
+        if (ball.getXPosLeftTopCorner() <= 0)
+        {
+            ball.revertMotionXAxis();
+            isBallCollisionWithRacketPossible = true;
+        }
     }
 
-    public static boolean ballWithTopWall()
+    private static void ballWithRightWall()
     {
-        return ball.getYPosLeftTopCorner() <= 0;
+        if (ball.getXPosLeftTopCorner() + ball.getDiameter() >= WindowSettings.WIDTH)
+        {
+            ball.revertMotionXAxis();
+            isBallCollisionWithRacketPossible = true;
+        }
     }
 
-    public static boolean ballWithBottomWall()
+    private static void ballWithTopWall()
     {
-        return ball.getYPosLeftTopCorner() + ball.getDiameter()
-               >= WindowSettings.HEIGHT - WindowSettings.WINDOW_TOP_BAR_HEIGHT;
+        if (ball.getYPosLeftTopCorner() <= 0)
+        {
+            ball.revertMotionYAxis();
+            isBallCollisionWithRacketPossible = true;
+        }
     }
 
-    public static boolean ballWithRacket(boolean isCollisionPossible)
+    private static void ballWithBottomWall()
     {
-        return racket.intersects(ball.getBounds()) && isCollisionPossible && ball.getYCenter() <= racket.y;
+        if (ball.getYPosLeftTopCorner() + ball.getDiameter()
+            >= WindowSettings.HEIGHT - WindowSettings.WINDOW_TOP_BAR_HEIGHT)
+        {
+            ball.setTouchingBottom(true);
+        }
     }
 
-    public static BrickCollisionDTO withBricks()
+    private static void ballWithRacket()
     {
-        brickCollisionDTO.setCollisionDetected(false);
+        if (racket.intersects(ball.getBounds()) && isBallCollisionWithRacketPossible && ball.getYCenter() <= racket.y)
+        {
+            ball.revertMotionYAxis();
+            isBallCollisionWithRacketPossible = false;
+        }
+    }
+
+    private static void ballWithBricks()
+    {
         loop:
         for (int row = 0; row < bricks.getBrickGrid().size(); row++)
         {
             for (int column = 0; column < bricks.getBrickGrid().get(row).size(); column++)
             {
-                if (bricks.getBrick(row, column).intersects(ball.getBounds()))
+                Brick brick = bricks.getBrick(row, column);
+                if (brick.intersects(ball.getBounds()))
                 {
-                    brickCollisionDTO.setCollisionDetected(true);
-                    brickCollisionDTO.setRowIndex(row);
-                    brickCollisionDTO.setColumnIndex(column);
+                    // if collision occured and ball center is located below or above brick
+                    if (ball.getYCenter() >= brick.y + bricks.getBrickHeight() || ball.getYCenter() <= brick.y)
+                    {
+                        ball.revertMotionYAxis();
+                    }
+                    else
+                    {
+                        ball.revertMotionXAxis();
+                    }
+
+                    bricks.removeBrick(row, column);
+                    isBallCollisionWithRacketPossible = true;
                     break loop;
                 }
             }
         }
-        return brickCollisionDTO;
     }
 }
